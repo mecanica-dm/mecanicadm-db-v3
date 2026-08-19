@@ -1,8 +1,6 @@
 name: CI/CD - Terraform Banco de Dados
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
