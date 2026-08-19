@@ -34,6 +34,10 @@ resource "random_password" "db_password" {
   min_upper        = 1
   min_lower        = 1
   min_numeric      = 1
+
+  keepers = {
+    environment = var.environment
+  }
 }
 
 # Cria Security Group: Libera só o SG da Lambda e o SG dos worker nodes do EKS da api.
