@@ -3,7 +3,12 @@ name: CI/CD - Terraform Banco de Dados
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   terraform:
@@ -50,6 +55,7 @@ jobs:
           TF_WORKSPACE: prod
 
       - name: Terraform Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan-prod
         env:
           TF_WORKSPACE: prod
