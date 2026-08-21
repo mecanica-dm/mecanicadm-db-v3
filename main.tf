@@ -79,6 +79,27 @@ resource "aws_db_subnet_group" "main" {
   tags = { Environment = var.environment }
 }
 
+# IAM Role para Enhanced Monitoring (CloudWatch metrics granulares do RDS)
+data "aws_iam_policy_document" "rds_monitoring_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["monitoring.rds.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "rds_monitoring" {
+  name               = "mecanicadm-${var.environment}-rds-monitoring"
+  assume_role_policy = data.aws_iam_policy_document.rds_monitoring_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "rds_monitoring" {
+  role       = aws_iam_role.rds_monitoring.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
 # Cria RDS
 resource "aws_db_instance" "mecanicadm" {
   identifier = "mecanicadm-${var.environment}"
@@ -98,12 +119,17 @@ resource "aws_db_instance" "mecanicadm" {
 
   multi_az            = var.multi_az
   publicly_accessible = false
-  skip_final_snapshot = !var.deletion_protection
+  skip_final_snapshot = false
+  final_snapshot_identifier = "mecanicadm-${var.environment}-final"
   deletion_protection = var.deletion_protection
 
   backup_retention_period = var.backup_retention_period
   backup_window           = "03:00-04:00"
   maintenance_window      = "sun:05:00-sun:06:00"
+
+  performance_insights_enabled = true
+  monitoring_interval          = 60
+  monitoring_role_arn          = aws_iam_role.rds_monitoring.arn
 
   tags = { Environment = var.environment }
 }
@@ -153,4 +179,10 @@ resource "aws_ssm_parameter" "db_password" {
   name  = "/mecanicadm/${var.environment}/db_password"
   type  = "SecureString"
   value = random_password.db_password.result
+}
+
+resource "aws_ssm_parameter" "db_sslmode" {
+  name  = "/mecanicadm/${var.environment}/db_sslmode"
+  type  = "String"
+  value = "require"
 }
