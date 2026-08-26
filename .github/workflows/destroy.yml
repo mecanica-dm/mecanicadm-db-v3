@@ -1,19 +1,24 @@
-name: CI/CD - Terraform Banco de Dados
+name: DESTROY - Banco de Dados (botão vermelho)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Digite DESTRUIR para confirmar"
+        required: true
+        type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
-  terraform:
+  destroy:
     runs-on: ubuntu-latest
     environment: prod
+    timeout-minutes: 30
+
+    if: inputs.confirmation == 'DESTRUIR'
 
     permissions:
       id-token: write
@@ -43,19 +48,20 @@ jobs:
         env:
           TF_WORKSPACE: prod
 
-      - name: Terraform Format
-        run: terraform fmt -check -diff
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan-prod
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
         env:
           TF_WORKSPACE: prod
 
-      - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan-prod
-        env:
-          TF_WORKSPACE: prod
+      - name: Verifica órfãos (informativo)
+        if: always()
+        run: |
+          echo "=== Snapshots do RDS restantes ==="
+          aws db describe-db-snapshots \
+            --query 'DBSnapshots[].DBSnapshotIdentifier' \
+            --output table 2>/dev/null || true
+          echo "=== Instâncias RDS restantes ==="
+          aws rds describe-db-instances \
+            --query 'DBInstances[].DBInstanceIdentifier' \
+            --output table 2>/dev/null || true
+          echo ">>> Se aparecer algo acima, apague manualmente pelo console."
