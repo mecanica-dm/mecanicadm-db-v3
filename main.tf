@@ -119,7 +119,7 @@ resource "aws_db_instance" "mecanicadm" {
 
   multi_az                  = var.multi_az
   publicly_accessible       = false
-  skip_final_snapshot       = false
+  skip_final_snapshot       = true
   final_snapshot_identifier = "mecanicadm-${var.environment}-final"
   deletion_protection       = var.deletion_protection
 
