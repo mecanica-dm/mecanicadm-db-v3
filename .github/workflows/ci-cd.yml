@@ -52,7 +52,7 @@ jobs:
           TF_WORKSPACE: prod
 
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan-prod
         env:
           TF_WORKSPACE: prod
