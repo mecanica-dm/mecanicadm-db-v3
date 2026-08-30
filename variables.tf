@@ -59,5 +59,5 @@ variable "deletion_protection" {
 variable "backup_retention_period" {
   description = "Dias de retenção de backup."
   type        = number
-  default     = 7
+  default     = 1
 }
