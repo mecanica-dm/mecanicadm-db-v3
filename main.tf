@@ -117,11 +117,11 @@ resource "aws_db_instance" "mecanicadm" {
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
-  multi_az            = var.multi_az
-  publicly_accessible = false
-  skip_final_snapshot = false
+  multi_az                  = var.multi_az
+  publicly_accessible       = false
+  skip_final_snapshot       = false
   final_snapshot_identifier = "mecanicadm-${var.environment}-final"
-  deletion_protection = var.deletion_protection
+  deletion_protection       = var.deletion_protection
 
   backup_retention_period = var.backup_retention_period
   backup_window           = "03:00-04:00"
