@@ -46,10 +46,10 @@ resource "aws_security_group" "rds" {
   vpc_id = data.aws_ssm_parameter.vpc_id.value
 
   dynamic "ingress" {
-    for_each = toset([
+    for_each = [
       data.aws_ssm_parameter.lambda_sg_id.value,
       data.aws_ssm_parameter.eks_node_sg_id.value,
-    ])
+    ]
     content {
       from_port       = 5432
       to_port         = 5432
