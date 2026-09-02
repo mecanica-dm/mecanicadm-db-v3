@@ -53,7 +53,7 @@ variable "postgres_version" {
 variable "deletion_protection" {
   description = "Protege o banco contra exclusão acidental."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "backup_retention_period" {
