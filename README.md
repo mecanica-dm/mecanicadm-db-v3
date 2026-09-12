@@ -189,6 +189,27 @@ flowchart LR
     I --> J([Fim])
 ```
 
+## Execução local
+
+Execute:
+
+```bash
+# 1. Baixa os plugins do provider e inicializa o backend remoto (S3)
+terraform init
+
+# 2. Revisa as mudanças que serão aplicadas
+terraform plan
+
+# 3. Aplica a infraestrutura (RDS, Security Groups, secrets no Secrets Manager/SSM)
+terraform apply
+```
+
+Para destruir os recursos criados localmente:
+
+```bash
+terraform destroy
+```
+
 ## Stack / Pré-requisitos
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.5.0
