@@ -151,40 +151,6 @@ erDiagram
         timestamp created_at
     }
 ```
-
-## Como Usar
-
-### 1. Inicializar o Terraform
-
-```bash
-terraform init \
-  -backend-config="bucket=<seu-bucket>" \
-  -backend-config="key=mecanicadm-db-v3/terraform.tfstate" \
-  -backend-config="region=us-east-1"
-```
-
-### 2. Planejar as mudanças
-
-```bash
-terraform plan -out=tfplan-prod
-```
-
-### 3. Aplicar as mudanças
-
-```bash
-terraform apply tfplan-prod
-```
-
-### 4. Destruir a infraestrutura
-
-> ⚠️ **Atenção**: Utilize apenas quando necessário. A destruição remove todos os recursos e dados do banco.
-
-```bash
-terraform destroy
-```
-
-Ou utilize o workflow manual `destroy.yml` no GitHub Actions (requer digitar `DESTRUIR` como confirmação).
-
 ## CI/CD
 
 ### Pipeline Principal (`ci-cd.yml`)
